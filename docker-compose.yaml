@@ -24,7 +24,7 @@ services:
       - "9090:9090"
 
   otel-collector:
-    image: otel/opentelemetry-collector:latest
+    image: otel/opentelemetry-collector:0.103.0
     restart: always
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
@@ -36,6 +36,16 @@ services:
       - "13133:13133" # health_check extension
       - "4317:4317"   # OTLP gRPC receiver
       - "55679:55679" # zpages extension
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - 3000:3000
 
   goapp:
     container_name: goapp
