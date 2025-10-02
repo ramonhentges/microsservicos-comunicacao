@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   jaeger-all-in-one:
     image: jaegertracing/all-in-one:latest
@@ -7,7 +7,7 @@ services:
       - "16686:16686"
       - "14268"
       - "14250"
-  
+
   zipkin-all-in-one:
     image: openzipkin/zipkin:latest
     restart: always
@@ -30,11 +30,11 @@ services:
     volumes:
       - ./.docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
-      - "1888:1888"   # pprof extension
-      - "8888:8888"   # Prometheus metrics exposed by the collector
-      - "8889:8889"   # Prometheus exporter metrics
+      - "1888:1888" # pprof extension
+      - "8888:8888" # Prometheus metrics exposed by the collector
+      - "8889:8889" # Prometheus exporter metrics
       - "13133:13133" # health_check extension
-      - "4317:4317"   # OTLP gRPC receiver
+      - "4317:4317" # OTLP gRPC receiver
       - "55679:55679" # zpages extension
 
   grafana:
@@ -78,7 +78,7 @@ services:
       - TITLE=Microservice Demo 2
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=blue
-      - EXTERNAL_CALL_URL=http://goapp3:8282
+      - EXTERNAL_CALL_URL=http://nestapp:8383
       - EXTERNAL_CALL_METHOD=GET
       - RESPONSE_TIME=2000
       - REQUEST_NAME_OTEL=microservice-demo2-request
@@ -108,6 +108,33 @@ services:
       - HTTP_PORT=:8282
     ports:
       - "8282:8282"
+    depends_on:
+      - jaeger-all-in-one
+      - zipkin-all-in-one
+      - prometheus
+      - otel-collector
+
+  nestapp:
+    container_name: nestapp
+    build:
+      context: ./nest-service
+      dockerfile: "Dockerfile.dev"
+    command: sh ./.docker/entrypoint.sh
+    environment:
+      - TITLE=Microservice Demo 4 - NEST
+      - CONTENT=This is a demo of a microservice
+      - BACKGROUND_COLOR=green
+      - EXTERNAL_CALL_URL=http://goapp3:8282
+      - EXTERNAL_CALL_METHOD=GET
+      - RESPONSE_TIME=2000
+      - REQUEST_NAME_OTEL=microservice-demo4-nest-request
+      - OTEL_SERVICE_NAME=microservice-demo4-nest
+      - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
+      - HTTP_PORT=8383
+    volumes:
+      - ./nest-service/:/home/node/app:rw
+    ports:
+      - "8383:8383"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
