@@ -1,0 +1,35 @@
+apiVersion: 1
+
+datasources:
+  - id: 2
+    uid: ff15sgseg1czke
+    orgId: 1
+    name: loki
+    type: loki
+    typeName: Loki
+    typeLogoUrl: public/plugins/loki/img/loki_icon.svg
+    access: proxy
+    url: http://loki:3100
+    user: ""
+    database: ""
+    basicAuth: false
+    isDefault: false
+    jsonData:
+      pdcInjected: false
+    readOnly: false
+  - id: 1
+    uid: ff15sfy7ypam8b
+    orgId: 1
+    name: prometheus
+    type: prometheus
+    typeName: Prometheus
+    typeLogoUrl: public/plugins/prometheus/img/prometheus_logo.svg
+    access: proxy
+    url: http://prometheus:9090
+    user: ""
+    database: ""
+    basicAuth: false
+    isDefault: true
+    jsonData:
+      pdcInjected: false
+    readOnly: false

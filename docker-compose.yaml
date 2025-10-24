@@ -37,6 +37,13 @@ services:
       - "4317:4317" # OTLP gRPC receiver
       - "55679:55679" # zpages extension
 
+  loki:
+    container_name: loki
+    image: grafana/loki:latest
+    restart: always
+    ports:
+      - 3100:3100
+
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
@@ -44,6 +51,10 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./.docker/datasources.yaml:/etc/grafana/provisioning/datasources/automatic.yml
+      - ./.docker/dashboards-provisioning.yaml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./.docker/dashboards:/var/lib/grafana/dashboards
     ports:
       - 3000:3000
 
