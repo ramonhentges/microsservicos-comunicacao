@@ -6,6 +6,7 @@ import { HostMetrics } from '@opentelemetry/host-metrics';
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
+import { PgInstrumentation } from '@opentelemetry/instrumentation-pg';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import {
@@ -41,6 +42,7 @@ export const initializeTracing = () => {
       new NestInstrumentation(),
       new HttpInstrumentation(),
       new ExpressInstrumentation(),
+      new PgInstrumentation({ enhancedDatabaseReporting: true }),
     ],
     resource,
   });

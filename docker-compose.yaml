@@ -1,4 +1,3 @@
-version: "3"
 services:
   jaeger-all-in-one:
     image: jaegertracing/all-in-one:latest
@@ -58,44 +57,50 @@ services:
     ports:
       - 3000:3000
 
-  goapp:
-    container_name: goapp
+  app:
+    container_name: app
     build:
-      context: .
+      context: ./nest-service
+      dockerfile: "Dockerfile.dev"
     environment:
       - TITLE=Microservice Demo
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=green
       - RESPONSE_TIME=1000
-      - EXTERNAL_CALL_URL=http://goapp2:8181
+      - EXTERNAL_CALL_URL=http://app2:8181
       - EXTERNAL_CALL_METHOD=GET
       - REQUEST_NAME_OTEL=microservice-demo-request
       - OTEL_SERVICE_NAME=microservice-demo
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=:8080
+      - HTTP_PORT=8484
+    volumes:
+      - ./nest-service/:/home/node/app:cached
     ports:
-      - "8080:8080"
+      - "8484:8484"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
       - prometheus
       - otel-collector
 
-  goapp2:
-    container_name: goapp2
+  app2:
+    container_name: app2
     build:
-      context: .
+      context: ./nest-service
+      dockerfile: "Dockerfile.dev"
     environment:
       - TITLE=Microservice Demo 2
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=blue
-      - EXTERNAL_CALL_URL=http://nestapp:8383
+      - EXTERNAL_CALL_URL=http://app3:8282
       - EXTERNAL_CALL_METHOD=GET
       - RESPONSE_TIME=2000
       - REQUEST_NAME_OTEL=microservice-demo2-request
       - OTEL_SERVICE_NAME=microservice-demo2
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=:8181
+      - HTTP_PORT=8181
+    volumes:
+      - ./nest-service/:/home/node/app:cached
     ports:
       - "8181:8181"
     depends_on:
@@ -104,19 +109,24 @@ services:
       - prometheus
       - otel-collector
 
-  goapp3:
-    container_name: goapp3
+  app3:
+    container_name: app3
     build:
-      context: .
+      context: ./nest-service
+      dockerfile: "Dockerfile.dev"
     environment:
       - TITLE=Microservice Demo 3
       - CONTENT=This is a demo of a microservice
-      - BACKGROUND_COLOR=green
+      - BACKGROUND_COLOR=red
+      - EXTERNAL_CALL_URL=http://app4:8383
+      - EXTERNAL_CALL_METHOD=GET
       - RESPONSE_TIME=2000
       - REQUEST_NAME_OTEL=microservice-demo3-request
       - OTEL_SERVICE_NAME=microservice-demo3
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=:8282
+      - HTTP_PORT=8282
+    volumes:
+      - ./nest-service/:/home/node/app:cached
     ports:
       - "8282:8282"
     depends_on:
@@ -125,25 +135,22 @@ services:
       - prometheus
       - otel-collector
 
-  nestapp:
-    container_name: nestapp
+  app4:
+    container_name: app4
     build:
       context: ./nest-service
       dockerfile: "Dockerfile.dev"
-    command: sh ./.docker/entrypoint.sh
     environment:
-      - TITLE=Microservice Demo 4 - NEST
+      - TITLE=Microservice Demo 4
       - CONTENT=This is a demo of a microservice
-      - BACKGROUND_COLOR=green
-      - EXTERNAL_CALL_URL=http://goapp3:8282
-      - EXTERNAL_CALL_METHOD=GET
-      - RESPONSE_TIME=2000
-      - REQUEST_NAME_OTEL=microservice-demo4-nest-request
-      - OTEL_SERVICE_NAME=microservice-demo4-nest
+      - BACKGROUND_COLOR=gray
+      - RESPONSE_TIME=2500
+      - REQUEST_NAME_OTEL=microservice-demo4-request
+      - OTEL_SERVICE_NAME=microservice-demo4
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
       - HTTP_PORT=8383
     volumes:
-      - ./nest-service/:/home/node/app:rw
+      - ./nest-service/:/home/node/app:cached
     ports:
       - "8383:8383"
     depends_on:
@@ -151,3 +158,36 @@ services:
       - zipkin-all-in-one
       - prometheus
       - otel-collector
+
+  app5:
+    container_name: app5
+    build:
+      context: .
+    environment:
+      - TITLE=Microservice Demo 5
+      - CONTENT=This is a demo of a microservice
+      - BACKGROUND_COLOR=blue
+      - RESPONSE_TIME=2000
+      - REQUEST_NAME_OTEL=microservice-demo5-request
+      - OTEL_SERVICE_NAME=microservice-demo5
+      - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
+      - HTTP_PORT=:8585
+    ports:
+      - "8585:8585"
+    depends_on:
+      - jaeger-all-in-one
+      - zipkin-all-in-one
+      - prometheus
+      - otel-collector
+
+  db:
+    container_name: db
+    image: postgres:17.6-alpine
+    restart: always
+    shm_size: 256mb
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
+    ports:
+      - "5432:5432"

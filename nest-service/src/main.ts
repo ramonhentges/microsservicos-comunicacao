@@ -1,6 +1,6 @@
+import { initializeTracing } from './tracer';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { initializeTracing } from './tracer';
 
 async function bootstrap() {
   initializeTracing();
