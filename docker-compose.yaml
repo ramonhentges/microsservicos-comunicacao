@@ -67,16 +67,16 @@ services:
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=green
       - RESPONSE_TIME=1000
-      - EXTERNAL_CALL_URL=http://app2:8181
+      - EXTERNAL_CALL_URL=http://app2:8282
       - EXTERNAL_CALL_METHOD=GET
       - REQUEST_NAME_OTEL=microservice-demo-request
       - OTEL_SERVICE_NAME=microservice-demo
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=8484
+      - HTTP_PORT=8181
     volumes:
       - ./nest-service/:/home/node/app:cached
     ports:
-      - "8484:8484"
+      - "8181:8181"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
@@ -92,17 +92,17 @@ services:
       - TITLE=Microservice Demo 2
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=blue
-      - EXTERNAL_CALL_URL=http://app3:8282
+      - EXTERNAL_CALL_URL=http://app3:8383
       - EXTERNAL_CALL_METHOD=GET
       - RESPONSE_TIME=2000
       - REQUEST_NAME_OTEL=microservice-demo2-request
       - OTEL_SERVICE_NAME=microservice-demo2
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=8181
+      - HTTP_PORT=8282
     volumes:
       - ./nest-service/:/home/node/app:cached
     ports:
-      - "8181:8181"
+      - "8282:8282"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
@@ -118,17 +118,17 @@ services:
       - TITLE=Microservice Demo 3
       - CONTENT=This is a demo of a microservice
       - BACKGROUND_COLOR=red
-      - EXTERNAL_CALL_URL=http://app4:8383
+      - EXTERNAL_CALL_URL=http://app4:8484
       - EXTERNAL_CALL_METHOD=GET
       - RESPONSE_TIME=2000
       - REQUEST_NAME_OTEL=microservice-demo3-request
       - OTEL_SERVICE_NAME=microservice-demo3
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=8282
+      - HTTP_PORT=8383
     volumes:
       - ./nest-service/:/home/node/app:cached
     ports:
-      - "8282:8282"
+      - "8383:8383"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
@@ -148,11 +148,11 @@ services:
       - REQUEST_NAME_OTEL=microservice-demo4-request
       - OTEL_SERVICE_NAME=microservice-demo4
       - OTEL_EXPORTER_OTLP_ENDPOINT=otel-collector:4317
-      - HTTP_PORT=8383
+      - HTTP_PORT=8484
     volumes:
       - ./nest-service/:/home/node/app:cached
     ports:
-      - "8383:8383"
+      - "8484:8484"
     depends_on:
       - jaeger-all-in-one
       - zipkin-all-in-one
